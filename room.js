@@ -1,5 +1,5 @@
 let answer
-let allPossibleLocations = ['north', 'south', 'east', 'west']
+let allPossibleDirections = ['north', 'south', 'east', 'west']
 const readline = require('readline')
 const readlineInterface = readline.createInterface({
     input: process.stdin,
@@ -40,9 +40,9 @@ let blue_box = {
 
 let room1 = {
     inventory: [
-        cabinet,
-        writingDesk,
-        paper
+        'cabinet',
+        'writingDesk',
+        'paper'
       ],
       north_description: "There is a metal door with a keypad. A note on the side that says \'I hope you are familiar with Half-Life...\' ",
       south_description: "There is a wooden chest that is boarded up with not only a metal lock keeping it shut tight but wooden planks nailed into preventing access...",    // Player must remove planks first and THEN unlock the lock to get the note for the keypad
@@ -51,27 +51,40 @@ let room1 = {
 }
 
 async function move(playerCurrentDirection){
-    let playerPossibleDirections = allPossibleDirections.filter(function(direction){
-        direction != playerPossibleDirections
-    }) // Make array of locations player can go other than current location                                                        
-    console.log(playerPossibleLocs)
-    answer = await("Choose where to go...")
+    let playerPossibleDirections = allPossibleDirections.filter(direction => direction !== playerCurrentDirection) // Make array of locations player can go other than current location                                                        
+    console.log(playerPossibleDirections)
+    let moveChoice = await ask("Choose where to go... ")
     // if(answer != valid locations ){
     //     return error
     // }
+    if(!playerPossibleDirections.includes(moveChoice)){
+        console.log("Not a possible location to move!")
+        move(playerCurrentDirection)
+    }
     
-    switch(answer){
+    switch(moveChoice){
         case 'north':
             player.current_facing = 'north'  // Add logic to make sure each of these inputs are valid (you're not trying to go to the same locaation you're already at)
-            play()
+            console.log("You have chosen north")
+            await play()
             break
         
         case 'south':
             player.current_facing = 'south'
-            play()
+            console.log("You have chosen south")
+            await play()
             break
 
         case 'west':
+            console.log("You have chosen west")
+            player.current_facing = 'west'
+            await play()
+            break
+
+        case 'east':
+            player.current_facing = 'east'
+            await play()
+            break
 
         default: 
             console.log("Unexpected input, please try again")
@@ -81,12 +94,13 @@ async function move(playerCurrentDirection){
 }
 
 async function play(){
+    console.log("Activated")
     switch(player.current_room){
         case 'room1':
             switch(player.current_facing){                           // Where is the player facing in room 1?
                 case 'north':           
                     console.log(room1.north_description)
-                    answer = await ask("Enter action")              // What is the player going to do in room 1 while facing this direction?
+                    answer = await ask("Enter action ")              // What is the player going to do in room 1 while facing this direction?
                     switch(answer){
                         case 'use keypad':
                             console.log("If you say so...")
@@ -110,7 +124,7 @@ async function play(){
                             break    
                         
                         case 'move':
-                            move()
+                            move(player.current_facing)
                             break
 
                         default:
@@ -118,11 +132,46 @@ async function play(){
                             play()
                             break
 
-                    }                
+                    } 
+                    break // This break is for individual parts of the rooms       
                 case 'south':
                     console.log(room1.south_description)
+                    answer = await ask("Enter action ")
+                    switch(answer){
+                        case 'use keypad':
+                            console.log("If you say so...")
+                            process.exit()
+                            break
+                        
+                        case 'examine':
+                            blue_box.describe()
+                            play()
+                            break
+
+                        // case 'go south':
+                        //     console.log("You head south!")
+                        //     player.current_facing = 'south'
+                        //     play()
+                        //     break
+                        
+                        case 'secret room':                         // Test visting room 2
+                            player.current_room = 'room2'
+                            play()
+                            break    
+                        
+                        case 'move':
+                            move(player.current_facing)
+                            break
+
+                        default:
+                            console.log("Unexpected answer!")
+                            play()
+                            break
+                        }
+                        break    
+                               
             }
-            break
+            break // This break is for the various rooms
             
         
         
