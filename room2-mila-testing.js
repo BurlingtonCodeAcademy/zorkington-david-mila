@@ -19,6 +19,7 @@ function examine(object) {
     }
 }
 
+//player object
 let player = {
     inv: [],
     health: 100,
@@ -39,6 +40,7 @@ let player = {
     }
 }
 
+//objects in room one
 let box_key = {
     opened: false,
     current_room: 'room1',
@@ -87,16 +89,17 @@ let cardboard_box = {
 
 }
 
+//objects in room two
 let shelf = {
     name: "Wooden Bookshelf",
     desc: "Could I be hiding something?",
     current_room: 'room2',
     current_facing: 'west',
-    inventory: ["key"],
+    inv: ["key"],
     takekey() {
-        if (player.inventory.includes('chairTwo')) {
-            let key = this.inventory.pop()
-            player.inventory.push(key)
+        if (player.inv.includes('chairTwo')) {
+            let key = this.inv.pop()
+            player.inv.push(key)
         } else {
             return console.log("You can't examine the Wooden Bookshelf yet")
         }
@@ -115,10 +118,10 @@ let chair = {
     desc: "You can use this chair to reach the books on the wooden bookshelf",
     current_room: 'room2',
     current_facing: 'south',
-    inventory: [chairTwo],
+    inv: [chairTwo],
     takeChair() {
-        let chairTwo = this.inventory.pop()
-        player.inventory.push(chairTwo)
+        let chairTwo = this.inv.pop()
+        player.inv.push(chairTwo)
         return console.log('Nice job! Now use this chair to reach the books on the wooden bookshelf') // we can use this function when the player use or take chair
     }
 }
@@ -139,7 +142,7 @@ let doorTwo = {
     current_room: 'room2',
     current_facing: 'north',
     unlockDoor() {
-        if (player.inventory.includes('key')) {
+        if (player.inv.includes('key')) {
             return console.log("Congratulations! You have unlocked the door. You must continue to the next room now!")
         } else {
             return console.log("You don't have the key to unlock this door")
@@ -147,22 +150,23 @@ let doorTwo = {
     }
 }
 
+//objects in room three
 let hay = {
     name: "Hayloft",
     desc: "I am sorry but the hayloft is out of reach!",
     current_room: 'room3',
     current_facing: 'east',
-    inventory: ["horseshoe"],
+    inv: ["horseshoe"],
     reachHay() {
-        if (player.inventory.includes('ladder')) {
+        if (player.inv.includes('ladder')) {
             return console.log("You have reached the hayloft and now you see a horseshoe. It must be another clue!")
         } else {
             return console.log("You need to reach the hayloft first!")
         }
     },
     takeHorseshoe() {
-        let horseshoe = this.inventory.pop()
-        player.inventory.push(horseshoe)
+        let horseshoe = this.inv.pop()
+        player.inv.push(horseshoe)
         return console.log("The numbers 12345 are inscribed on the horseshoe")
     }
 }
@@ -172,10 +176,10 @@ let ladderThree = {
     desc: "Could this ladder help you somehow? You might have to look around to find out",
     current_room: 'room3',
     current_facing: 'west',
-    inventory: ["ladder"],
+    inv: ["ladder"],
     takeladderThree() {
-        let ladder = this.inventory.pop()
-        player.inventory.push(ladder)
+        let ladder = this.inv.pop()
+        player.inv.push(ladder)
         return console.log("Great job! You are one step closer now!")
     }
 }
@@ -203,7 +207,7 @@ let doorThree = {
     current_room: 'room3',
     current_facing: 'north',
     unlockDoorThree() {
-        if (player.inventory.includes('horseshoe')) {
+        if (player.inv.includes('horseshoe')) {
             let codeRoomThree = await ask("Please enter the code...")
             let win = player.unlock(codeRoomThree)
             return win // check this return function!!!
@@ -213,8 +217,67 @@ let doorThree = {
     }
 }
 
+//objects in room four
+let message = {
+    name: "Written Message",
+    desc: "The secret to escape this room is in the wooden box, but you need to find something to open it with",
+    current_room: 'room4',
+    current_facing: 'south'
+}
+
+let big_box = {
+    name: "Big Box",
+    desc: "The box is slightly open... What could this be?",
+    current_room: 'room4',
+    current_facing: 'east',
+    inv: ['hammer'],
+    lookinside() {
+        return consloge.log("There is hammer inside the big box... Could it be useful?")
+    },
+    takeHammer() {
+        let hammer = this.inv.pop()
+        player.inv.push(hammer)
+        return console.log("Nice job! This hammer can help you open the wooden box")
+    }
+}
+
+let wooden_box = {
+    name: "Wooden Box",
+    desc: "The box is sealed. You need a tool to open it",
+    current_room: 'room4',
+    current_facing: 'west',
+    inv: ['keyFour'],
+    openBox() {
+        if (player.inv.includes('hammer')) {
+            let keyFour = this.inv.pop()
+            player.inv.push(keyFour)
+            return console.log("You have opened the wooden box and found the key to unlock the metal door!")
+        } else {
+            return console.log("You need a tool to open this box first!")
+        }
+    }
+}
+
+let doorFour = {
+    name: "Metal Door",
+    desc: "This door takes you to the next room, but you must find the key to unlock it first",
+    current_room: 'room4',
+    current_facing: 'north',
+    unlockDoor() {
+        if (player.inv.includes('keyFour')) {
+            return console.log("Congratulations! You have unlocked the door. You must continue to the next room now!")
+        } else {
+            return console.log("You don't have the key to unlock this door")
+        }
+    }
+}
+//objects in room five
+
+
+
+//rooms
 let room1 = {
-    inventory: [
+    inv: [
         'cabinet',
         'writingDesk',
         'paper'
@@ -226,8 +289,9 @@ let room1 = {
     west_description: "\nThere's a closed, cardboard box with a tear on the top",
 }
 
+//console.log('This is a nice looking office, but... I am locked!')
 let room2 = {
-    inventory: [
+    inv: [
         'shelf',
         'table',
         'chair',
@@ -242,7 +306,7 @@ let room2 = {
 
 //console.log('Now you find yourself in a barn... this should be fun!')
 let room3 = {
-    inventory: [
+    inv: [
         'hay',
         'ladderThree',
         'wagon',
@@ -250,10 +314,38 @@ let room3 = {
         'doorThree'
     ],
     north_description: "There are double dutch doors. There is a keypad on the handle, but it is locked.",
-    south_description: "There is a old wagon that doesn't seem to be in use anymore. There is a piece of paper next to it.",   
-    east_description: "You see a hayloft but no way to get there",                                      
+    south_description: "There is a old wagon that doesn't seem to be in use anymore. There is a piece of paper next to it.",
+    east_description: "You see a hayloft but no way to get there",
     west_description: "There's a wooden ladder against the wall."
 }
+
+//console.log('This room looks like a creepy wharehouse... What kind of place is this?!!')
+let room4 = {
+    inv: [
+        'message',
+        'wooden_box',
+        'big_box',
+        'doorFour'
+    ],
+    north_description: "There is a huge metal door on the north wall that takes you to the next room. The door is locked",
+    south_description: "Somebody left a written message for you on the south wall",
+    east_description: "There is a big box against the east wall. The box is slightly open",
+    west_description: "You see a closed wooden box. It has nails and you have no way to open it...yet",
+}
+
+// let room5 = {
+//     inv: [
+//         'hay',
+//         'ladderThree',
+//         'wagon',
+//         'paper',
+//         'doorThree'
+//     ],
+//     north_description: "There are double dutch doors. There is a keypad on the handle, but it is locked.",
+//     south_description: "There is a old wagon that doesn't seem to be in use anymore. There is a piece of paper next to it.",   
+//     east_description: "You see a hayloft but no way to get there",                                      
+//     west_description: "There's a wooden ladder against the wall."
+// }
 
 async function move(playerCurrentDirection) {
     let playerPossibleDirections = allPossibleDirections.filter(direction => direction !== playerCurrentDirection) // Make array of locations player can go other than current location                                                        
