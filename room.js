@@ -1,6 +1,7 @@
 let answer
 let allPossibleDirections = ['north', 'south', 'east', 'west']
-const readline = require('readline')
+const readline = require('readline');
+const { userInfo } = require('os');
 const readlineInterface = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -12,7 +13,14 @@ function ask(questionText) {
     });
   };
 
-let player = {
+function examine(object){
+    if(object.current_room === player.current_room && object.current_facing === player.current_facing){
+        console.log(`Object found... attempting to describe... ${object.desc}`)
+    }
+}
+
+
+  let player = {
     inv: [],
     health: 100,
     current_room: 'room1',
@@ -23,18 +31,52 @@ let player = {
     }
 }
 
-let cardboard_box = {                       // How do we track where this object is?
-    opened: 'false',
-    location: ['room1', 'north'],                  
-    describe(){                             // Function for observing box
-        console.log("It's a cardboard box that appears to be slightly open... On the side there's a strange, three-pronged symbol.")
-    },
+
+let box_key = {
+    opened: false,
+    current_room: 'room1',
+    current_facing: 'east',
+    visible: true,                                    
+    takeable: false,              // The key will only be takeable when it is visible and the chest in front of it has been opened
+    useable: true, 
+}
+
+let boarded_box = {
+    opened: false,
+    current_room: 'room1',
+    current_facing: 'south',
+    visible: true,
+    takeable: false,
+    useable: false,
+    desc: "It's a box with planks nailed into it preventing access... On top of this, there's a metal lock around the chest with a keyhole."
+}
+
+
+let cardboard_box = {                                 
+    opened: false,
+    current_room: 'room1',
+    current_facing: 'west',
+    visible: true,                                    
+    takeable: false,
+    useable: true,                  
+    desc: "It's a cardboard box that appears to be slightly open... On the side there's a strange, three-pronged symbol.",
     open(){
-        console.log("You found a crowbar! Current inventory: ")
-        console.log(player.inv)
-        player.inv.push('crowbar')
-        this.open = 'true'
-    }
+        if(this.opened === false){
+            this.opened = 'true'
+            this.desc = "The box is now open and empty"
+            console.log("\nYou found a crowbar! Current inventory: ")
+            player.inv.push('crowbar')
+            console.log(player.inv)
+            room1.west_description = "\nThere is an opened cardboard box in the west side now..."
+            
+        } else {
+            console.log("\nIt's already open!")        // To make the output look cleaner I want to put new line breaks 
+        }
+        
+    },
+    take(){
+        console.log("\nYou can't take this! ")
+    },
 
 }
 
@@ -46,10 +88,11 @@ let room1 = {
         'writingDesk',
         'paper'
       ],
-      north_description: "There is a metal door with a keypad. A note on the side that says \'I hope you are familiar with Half-Life...\' ",
-      south_description: "There is a wooden chest that is boarded up with not only a metal lock keeping it shut tight but wooden planks nailed into preventing access...",    // Player must remove planks first and THEN unlock the lock to get the note for the keypad
-      east_description: "You see a writing desk against the east wall with a note written on top of it and a drawer slightly open",                                           // We want the player to open this box at any time to get the crowbar
-      west_description: "There's a closed, cardboard box with a tear on the top",
+     
+      north_description: "\nThere is a metal door with a keypad. A note on the side that says \'I hope you are familiar with Half-Life...\' ",
+      south_description: "\nThere is a wooden chest that is boarded up with not only a metal lock keeping it shut tight but wooden planks nailed into preventing access...",    // Player must remove planks first and THEN unlock the lock to get the note for the keypad
+      east_description: "\nYou see a writing desk against the east wall with a note written on top of it and a drawer slightly open",                                           // We want the player to open this box at any time to get the crowbar
+      west_description: "\nThere's a closed, cardboard box with a tear on the top",
 }
 
 async function move(playerCurrentDirection){
@@ -58,7 +101,7 @@ async function move(playerCurrentDirection){
     let moveChoice = await ask("Choose where to go... ")  
 
     if(!playerPossibleDirections.includes(moveChoice)){
-        console.log("Not a possible location to move!")
+        console.log("\nNot a possible location to move!")
         move(playerCurrentDirection)
     } else {
         switch(moveChoice){
@@ -86,7 +129,7 @@ async function move(playerCurrentDirection){
                 break
     
             default: 
-                console.log("Unexpected input, please try again")
+                console.log("\nUnexpected input, please try again")
                 move(playerCurrentDirection)
                 break
         }
@@ -96,7 +139,6 @@ async function move(playerCurrentDirection){
 }
 
 async function play(){
-    console.log("Activated")
     switch(player.current_room){
         case 'room1':
             switch(player.current_facing){                           // Where is the player facing in room 1?
@@ -138,8 +180,8 @@ async function play(){
                             process.exit()
                             break
                         
-                        case 'examine':
-                            blue_box.describe()
+                        case ('examine box' || 'examine chest' || 'examine treasure chest'):
+                            console.log(boarded_box.desc)
                             play()
                             break
 
@@ -159,7 +201,7 @@ async function play(){
                             break
 
                         default:
-                            console.log("Unexpected answer!")
+                            console.log("\nUnexpected answer!")
                             play()
                             break
                         }
@@ -193,6 +235,36 @@ async function play(){
                         }
                         
                     break
+                
+                    case 'west':
+                        console.log(room1.west_description)
+                        answer = await ask("Enter action ")
+                        switch(answer){
+                            case ('examine box' || 'examine cardboard box'):
+                                examine(cardboard_box)
+                                play()
+                                break
+                            
+                            case ('open box' || 'open cardboard box'):                         
+                                cardboard_box.open()
+                                play()
+                                break    
+                            
+                            case ('take box' || 'take cardboard box'):
+                                cardboard_box.take()
+                                break
+
+                            case 'move':
+                                move(player.current_facing)
+                                break
+    
+                            default:
+                                console.log("Unexpected answer!")
+                                play()
+                                break
+                            }
+                        break
+                            
 
                                
             }
