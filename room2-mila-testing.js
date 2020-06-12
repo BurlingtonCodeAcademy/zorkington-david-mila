@@ -147,6 +147,72 @@ let doorTwo = {
     }
 }
 
+let hay = {
+    name: "Hayloft",
+    desc: "I am sorry but the hayloft is out of reach!",
+    current_room: 'room3',
+    current_facing: 'east',
+    inventory: ["horseshoe"],
+    reachHay() {
+        if (player.inventory.includes('ladder')) {
+            return console.log("You have reached the hayloft and now you see a horseshoe. It must be another clue!")
+        } else {
+            return console.log("You need to reach the hayloft first!")
+        }
+    },
+    takeHorseshoe() {
+        let horseshoe = this.inventory.pop()
+        player.inventory.push(horseshoe)
+        return console.log("The numbers 12345 are inscribed on the horseshoe")
+    }
+}
+
+let ladderThree = {
+    name: "Wooden Ladder",
+    desc: "Could this ladder help you somehow? You might have to look around to find out",
+    current_room: 'room3',
+    current_facing: 'west',
+    inventory: ["ladder"],
+    takeladderThree() {
+        let ladder = this.inventory.pop()
+        player.inventory.push(ladder)
+        return console.log("Great job! You are one step closer now!")
+    }
+}
+
+let paper = {
+    name: "Piece of Paper",
+    desc: "Look inside the wagon to get your first clue!",
+    current_room: 'room3',
+    current_facing: 'south'
+}
+
+let wagon = {
+    name: "Old Wagon",
+    desc: "A very old wagon on the south end of the room",
+    current_room: 'room3',
+    current_facing: 'south',
+    lookinside() {
+        return consloge.log("There is an inscription that says: You should start up above. If you look around, you 'll find a way to get there")
+    }
+}
+
+let doorThree = {
+    name: "Double Dutch Doors",
+    desc: "These doors take you to the next room. There is a keypad on the handle, but it is locked",
+    current_room: 'room3',
+    current_facing: 'north',
+    unlockDoorThree() {
+        if (player.inventory.includes('horseshoe')) {
+            let codeRoomThree = await ask("Please enter the code...")
+            let win = player.unlock(codeRoomThree)
+            return win // check this return function!!!
+        } else {
+            return console.log("You don't know how to unlock this door")
+        }
+    }
+}
+
 let room1 = {
     inventory: [
         'cabinet',
@@ -175,75 +241,19 @@ let room2 = {
 }
 
 //console.log('Now you find yourself in a barn... this should be fun!')
-//Let room3 = {
-//     inventory: [
-//         'hay,
-//         'ladderThree',
-//         'wagon,
-//         'paper',
-//         'doorThree'
-//     ],
-//     north_description: "There are double dutch doors. There is a keypad on the handle, but it is locked.",
-//     south_description: "There is a old wagon that doesn't seem to be in use anymore. There is a piece of paper next to it,   
-//     east_description: "You see a hayloft but no way to get there",                                      
-//     west_description: "There's a wooden ladder against the wall.
-// }
-
-
-// let hay = {
-//     name: "Hayloft",
-//     desc: "I am sorry but the hayloft is out of reach!",
-//     inventory: ["horseshoe"],
-//     reachHay() {
-//         if (player.inventory.includes('ladder'))
-//         retun console.log("You have reached the hayloft and now you see a horseshoe. It must be another clue!")
-//     takeHorseshoe()
-//     let horseshoe = this.inventory.pop()
-//     player.inventory.push(horseshoe)
-//     return console.log("The numbers 12345 are inscribed on the horseshoe")
-//     } else {
-//         return console.log("You need to reach the hayloft first!")
-//     }
-// }
-
-// let ladderThree = {
-// name: "Wooden Ladder",
-// desc: "Could this ladder help you somehow? You might have to look around to find out",
-// inventory: ["ladder"],
-// takeladderThree() {
-//     let ladder = this.inventory.pop()
-//     player.inventory.push(ladder)
-// return console.log("Great job! You are one step closer now!")
-// }
-// }
-
-// let paper = {
-// name: "Piece of Paper",
-// desc: "Look inside the wagon to get your first clue!"
-// }
-
-// let wagon = {
-//     name: "Old Wagon",
-//     desc: "A very old wagon on the south end of the room",
-//     lookinside() {
-//         return consloge.log("There is an inscription that says: You should start up above. If you look around, you 'll find a way to get there")
-//     }
-// }
-
-// let doorThree = {
-//     name: "Double Dutch Doors",
-//     desc: "These doors take you to the next room. There is a keypad on the handle, but it is locked",
-//     unlockDoorThree() {
-//         if (player.inventory.includes('horseshoe')) {
-//             let codeRoomThree = await ask ("Please enter the code...")
-//         let win = player.unlock(codeRoomThree)
-//         return win // check this return function!!!
-//         } else {
-//             return console.log("You don't know how to unlock this door")
-//         }
-//     }
-// }
-// }
+let room3 = {
+    inventory: [
+        'hay',
+        'ladderThree',
+        'wagon',
+        'paper',
+        'doorThree'
+    ],
+    north_description: "There are double dutch doors. There is a keypad on the handle, but it is locked.",
+    south_description: "There is a old wagon that doesn't seem to be in use anymore. There is a piece of paper next to it.",   
+    east_description: "You see a hayloft but no way to get there",                                      
+    west_description: "There's a wooden ladder against the wall."
+}
 
 async function move(playerCurrentDirection) {
     let playerPossibleDirections = allPossibleDirections.filter(direction => direction !== playerCurrentDirection) // Make array of locations player can go other than current location                                                        
