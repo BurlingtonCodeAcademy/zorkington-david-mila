@@ -1,5 +1,7 @@
 let answer
 let allPossibleDirections = ['north', 'south', 'east', 'west']
+let keypad_answer
+
 const readline = require('readline');
 const { userInfo } = require('os');
 const readlineInterface = readline.createInterface({
@@ -15,51 +17,159 @@ function ask(questionText) {
 
 function examine(object){
     if(object.current_room === player.current_room && object.current_facing === player.current_facing){
-        console.log(`Object found... attempting to describe... ${object.desc}`)
+        console.log('\n \x1b[36m%s\x1b[0m', `\n${object.desc}`)
     }
 }
 
 
-  let player = {
+let player = {
     inv: [],
     health: 100,
+    isTrapped: true,
     current_room: 'room1',
     current_facing: 'north',
+
+    check_inventory(){
+        if(player.inv.length !== 0){
+            console.log('\n \x1b[36m%s\x1b[0m', `\n Current inventory: ${player.inv}`)
+        } else {
+            console.log('\n \x1b[36m%s\x1b[0m', `\n You don't have anything!`)
+        }
+        
+    },
     escape(){
         console.log("You have escaped")
         process.exit()
     }
 }
-
-
-let box_key = {
+let room1_drawer = {
     opened: false,
     current_room: 'room1',
     current_facing: 'east',
     visible: true,                                    
     takeable: false,              // The key will only be takeable when it is visible and the chest in front of it has been opened
-    useable: true, 
+    useable: true,
+    desc: "There is a wooden drawer slightly open with a note on top hastily written",
+    open(){
+        if(this.opened === false){
+            this.opened = true
+            this.desc = "The drawer is left opened like someone forgot to close it... looks sloppy."
+            console.log("\nYou found the drawer key!")
+            player.inv.push('drawer key')
+            console.log("Current inventory: ")
+            console.log(player.inv)
+        } else {
+            console.log("It's already open!")
+        }
+    },
+    close(){
+        if(this.opened === true){
+            this.opened = false
+            this.desc = "The drawer is now shut tight. Good for you keeping the place less tacky without a drawer hanging open awkwardly."
+        } else {
+            console.log("The drawer is already closed!")
+        }
+        
+    },
+    read(){
+        console.log('\n \x1b[36m%s\x1b[0m', `\n The note says \"The first digits are 457\"`)
+    },
+
+    take_note(){
+        console.log("You've taken the note!")
+    }
 }
 
-let boarded_box = {
+
+let room1_keypad = {
+    current_room: 'room1',
+    current_facing: 'north',
+    useable: true,
+    guesses: 3,
+    code: '45730',
+    desc: '\n A strange keypad with numbers 1-9. There\'s an LED text box above the numbers that says \"Waiting for input\"',
+    async use_keypad(){
+        keypad_answer = await ask("Enter code ")
+        if(keypad_answer === this.code){
+            console.log("Correct! The door unlocks")
+            player.isTrapped = false
+
+        } else if((keypad_answer != this.code) && this.guesses !== 0){
+            this.guesses -= 1
+            console.log(`\x1b[33m%s\x1b[0m: `, `\nWarning, incorrect answer! You have ${this.guesses} guesses left!`)
+        } else {
+            console.log(`\x1b[33m%s\x1b[0m: `, `\nRoom guesses have reached ${this.guesses}... Self-destruct initiated!`)
+            console.log("Game over!")
+            process.exit()
+        }
+    }
+}
+
+let room1_box_key = {
+    name: 'box key',
+    current_room: 'room1',
+    current_facing: 'east',
     opened: false,
+    visible: true,                                    
+    takeable: false,              // The key will only be takeable when it is visible and the chest in front of it has been opened
+    useable: true, 
+    desc: '\nThis is the key you found in the box! It will come in use later...'
+}
+
+let room1_boarded_box = {
     current_room: 'room1',
     current_facing: 'south',
+    locked: true,
+    boarded: true,
+    opened: false,
     visible: true,
     takeable: false,
     useable: false,
-    desc: "It's a box with planks nailed into it preventing access... On top of this, there's a metal lock around the chest with a keyhole."
+    desc: "\nIt's a box with planks nailed into it preventing access... On top of this, there's a metal lock around the chest with a keyhole.",
+    use_crowbar(){
+        if(this.boarded === true &&  this.locked === false){
+            this.boarded = false
+            this.desc = "\n "
+            console.log('\n \x1b[33m%s\x1b[0m', 'You pull the boards off the box using the crowbar')   
+        } else if (this.boarded === true && this.locked === true){
+            console.log('\n \x1b[33m%s\x1b[0m', 'You can\'t pull off the boards until the metal lock in the way gets removed!') 
+        } else {
+            console.log(`Is this boarded: ${this.boarded} Is this locked: ${this.locked}`)
+            console.log('\n \x1b[33m%s\x1b[0m', 'You\'ve already removed the boards!')            
+        }
+    },
+    unlock(){
+        if(this.locked === true && player.inv.includes('drawer key')){
+            this.locked = false
+            this.desc = ('\n It\'s a box boarded up now without that pesky metal lock in the way!')
+            room1.south_description = "The box has forgone its relationship with his pal the metal lock."
+            console.log('\n \x1b[33m%s\x1b[0m', 'The metal lock falls to the ground upon being unlocked with a loud THUD')
+        } else if(this.locked === false){
+            console.log("\n It's already unlocked!")
+        } else {
+            console.log("You need a key!")
+        }
+    },
+    open(){
+        if(this.boarded === false && this.locked === false){
+            room1.south_description = "The box only has a note in it now, with broken planks and a metal lock on the ground!"
+            this.desc = "\nThe chest you just opened to get the note!"
+            console.log('\n \x1b[33m%s\x1b[0m', 'You found a hidden note with that says... \"The last numbers are 345!\"')
+        } else {
+            console.log("You can't open this yet!")
+        }
+    }
 }
 
 
-let cardboard_box = {                                 
+let room1_cardboard_box = {                                 
     opened: false,
     current_room: 'room1',
     current_facing: 'west',
     visible: true,                                    
-    takeable: false,
+    // takeable: false,
     useable: true,                  
-    desc: "It's a cardboard box that appears to be slightly open... On the side there's a strange, three-pronged symbol.",
+    desc: "\nIt's a cardboard box that appears to be slightly open... On the side there's a strange, three-pronged symbol.",
     open(){
         if(this.opened === false){
             this.opened = 'true'
@@ -80,6 +190,15 @@ let cardboard_box = {
 
 }
 
+
+// let objBox = []
+// player.inv.push(room1_cardboard_box, room1_box_key)
+
+function check_stuff(inventory){
+    inventory.forEach(element => console.log(element.desc))
+    console.log('checked')
+    process.exit()
+}
 
 
 let room1 = {
@@ -141,17 +260,37 @@ async function move(playerCurrentDirection){
 async function play(){
     switch(player.current_room){
         case 'room1':
-            switch(player.current_facing){                           // Where is the player facing in room 1?
+            switch(player.current_facing){                                          // Where is the player facing in room 1?
                 case 'north':           
                     console.log(room1.north_description)
-                    answer = await ask("Enter action ")              // What is the player going to do in room 1 while facing this direction?
+                    answer = await ask("Enter action (to move say 'move') ")     // What is the player going to do in room 1 while facing this direction?
                     switch(answer){
-                        case 'use keypad':
-                            console.log("If you say so...")
+                        case 'i' || 'check inventory' || 'inventory' || 'inv' || 'check inv':
+                            player.check_inventory()
                             play()
                             break
+
+                        case 'use keypad':
+                            await room1_keypad.use_keypad()         // I put await here because I want to 'slow down and don't print anything else until this function returns'                  
+                            play()
+                            break
+
+                        case 'use door' || 'open door' || 'walk through door':
+                            if(player.isTrapped === false){
+                                console.log("The room has been unlocked and you can proceed to leave!")
+                                player.current_room = 'room2'
+                            }
+                            player.isTrapped = true                     
+                            play()
+                            break                    
                         
-                        case 'examine':                   // !!! How do we examine objects around us? New function?
+                        case 'check stuff':
+                            check_stuff(player.inv)
+                            process.exit()
+                            break
+                        
+                        case ('examine keypad' || 'examine pad'):                
+                            examine(room1_keypad)
                             play()
                             break
                         
@@ -174,23 +313,32 @@ async function play(){
                 case 'south':
                     console.log(room1.south_description)
                     answer = await ask("Enter action ")
-                    switch(answer){
-                        case 'use keypad':
-                            console.log("If you say so...")
-                            process.exit()
+                    switch(answer){     
+                        case 'i' || 'check inventory' || 'inventory' || 'inv' || 'check inv':
+                            player.check_inventory()
+                            play()
                             break
-                        
-                        case ('examine box' || 'examine chest' || 'examine treasure chest'):
+
+                        case 'examine box' || 'examine chest' || 'examine treasure chest':
                             console.log(boarded_box.desc)
                             play()
                             break
 
-                        // case 'go south':
-                        //     console.log("You head south!")
-                        //     player.current_facing = 'south'
-                        //     play()
-                        //     break
+                        case 'use crowbar' || 'use crowbar on box' || 'use crowbar on chest' && player.inv.includes('crowbar'):
+                            await room1_boarded_box.use_crowbar()
+                            play()
+                            break
+
+                        case 'use key' || 'use key on box' || 'use key on chest':
+                            await room1_boarded_box.unlock()
+                            play()
+                            break    
                         
+                        case 'open box' || 'open chest':
+                            await room1_boarded_box.open()
+                            play()
+                            break 
+
                         case 'secret room':                         // Test visting room 2
                             player.current_room = 'room2'
                             play()
@@ -205,22 +353,33 @@ async function play(){
                             play()
                             break
                         }
-                        break
+                    break
                 
                 case 'east':
                     console.log(room1.east_description)      // Room with the drawer
                     answer = await ask("Enter action ")
                     switch(answer){
+                        case 'i' || 'check inventory' || 'inventory' || 'inv' || 'check inv':
+                            player.check_inventory()
+                            play()
+                            break
+
                         case ('open drawer' || 'grab drawer'):
-                            console.log()
-                        
+                            room1_drawer.open()
+                            play()
+                            break
+
+                        case ('close drawer' || 'shut drawer' ):
+                            room1_drawer.close()
+                            break
+
                         case ('examine drawer' || 'look at drawer' || 'observe drawer'):
-                            writingDesk.describe()
+                            examine(room1_drawer)
                             play()
                             break
                         
-                        case 'secret room':                         // Test visting room 2
-                            player.current_room = 'room2'
+                        case ('read note' || 'examine note'):                         // Test visting room 2
+                            room1_drawer.read()
                             play()
                             break    
                         
@@ -240,18 +399,23 @@ async function play(){
                         console.log(room1.west_description)
                         answer = await ask("Enter action ")
                         switch(answer){
+                            case 'i' || 'check inventory' || 'inventory' || 'inv' || 'check inv':
+                            player.check_inventory()
+                            play()
+                            break
+
                             case ('examine box' || 'examine cardboard box'):
-                                examine(cardboard_box)
+                                examine(room1_cardboard_box)
                                 play()
                                 break
                             
                             case ('open box' || 'open cardboard box'):                         
-                                cardboard_box.open()
+                                room1_cardboard_box.open()
                                 play()
                                 break    
                             
                             case ('take box' || 'take cardboard box'):
-                                cardboard_box.take()
+                                room1_cardboard_box.take()
                                 break
 
                             case 'move':
