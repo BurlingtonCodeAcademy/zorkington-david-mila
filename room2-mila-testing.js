@@ -102,6 +102,10 @@ let cardboard_box = {
 let shelf = {
     name: "Wooden Bookshelf",
     desc: "Could I be hiding something?",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room2',
     current_facing: 'west',
     inv: ["key"],
@@ -118,6 +122,10 @@ let shelf = {
 let table = {
     name: "Fancy Table",
     desc: "You see a note on the fancy table. Could it be a clue?",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room2',
     current_facing: 'east',
 }
@@ -125,6 +133,10 @@ let table = {
 let chair = {
     name: "Lonely Chair",
     desc: "You can use this chair to reach the books on the wooden bookshelf",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: true,
     current_room: 'room2',
     current_facing: 'south',
     inv: [chairTwo],
@@ -138,6 +150,10 @@ let chair = {
 let note = {
     name: "Note",
     desc: "If you read me, you might find out how to unlock the room",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room2',
     current_facing: 'east',
     readNote() {
@@ -148,6 +164,10 @@ let note = {
 let doorTwo = {
     name: "Door",
     desc: "This door takes you to the next room, but you must find the key to unlock it first",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room2',
     current_facing: 'north',
     unlockDoor() {
@@ -281,68 +301,6 @@ let doorFour = {
     }
 }
 //objects in room five
-
-
-
-//rooms
-let room1 = {
-    inv: [
-        'cabinet',
-        'writingDesk',
-        'paper'
-    ],
-
-    north_description: "\nThere is a metal door with a keypad. A note on the side that says \'I hope you are familiar with Half-Life...\' ",
-    south_description: "\nThere is a wooden chest that is boarded up with not only a metal lock keeping it shut tight but wooden planks nailed into preventing access...",    // Player must remove planks first and THEN unlock the lock to get the note for the keypad
-    east_description: "\nYou see a writing desk against the east wall with a note written on top of it and a drawer slightly open",                                           // We want the player to open this box at any time to get the crowbar
-    west_description: "\nThere's a closed, cardboard box with a tear on the top",
-}
-
-//console.log('This is a nice looking office, but... I am locked!')
-let room2 = {
-    inv: [
-        'shelf',
-        'table',
-        'chair',
-        'note',
-        'doorTwo'
-    ],
-    north_description: "There is a wooden door that takes you to the next room but it's locked. You need to find a key.",
-    south_description: "There is a lonely chair against the south wall",
-    east_description: "You see a fancy table on the east wall with a note written on top of it",
-    west_description: "There's a wooden bookshelf and a bunch of books on it.",
-}
-
-//console.log('Now you find yourself in a barn... this should be fun!')
-let room3 = {
-    inv: [
-        'hay',
-        'ladderThree',
-        'wagon',
-        'paper',
-        'doorThree'
-    ],
-    north_description: "There are double dutch doors. There is a keypad on the handle, but it is locked.",
-    south_description: "There is a old wagon that doesn't seem to be in use anymore. There is a piece of paper next to it.",
-    east_description: "You see a hayloft but no way to get there",
-    west_description: "There's a wooden ladder against the wall."
-}
-
-//console.log('This room looks like a creepy wharehouse... What kind of place is this?!!')
-let room4 = {
-    inv: [
-        'message',
-        'wooden_box',
-        'big_box',
-        'doorFour'
-    ],
-    north_description: "There is a huge metal door on the north wall that takes you to the next room. The door is locked",
-    south_description: "Somebody left a written message for you on the south wall",
-    east_description: "There is a big box against the east wall. The box is slightly open",
-    west_description: "You see a closed wooden box. It has nails and you have no way to open it...yet",
-}
-
-//console.log(You are now only a few steps away from escaping! You just need to find the way to escape this ... circus?) 
 let boxMessage = {
     name: "Message on Orange Box",
     desc: "The message on the orange box can help you escape",
@@ -353,7 +311,7 @@ let boxMessage = {
     }
 }
 
-let OrangeBox = {
+let orangeBox = {
     name: "Orange Box",
     desc: "What will yo find inside the box?",
     current_room: 'room5',
@@ -437,6 +395,68 @@ let doorFive = {
         }
     }
 }
+
+
+//rooms
+let room1 = {
+    inv: [
+        'cabinet',
+        'writingDesk',
+        'paper'
+    ],
+
+    north_description: "\nThere is a metal door with a keypad. A note on the side that says \'I hope you are familiar with Half-Life...\' ",
+    south_description: "\nThere is a wooden chest that is boarded up with not only a metal lock keeping it shut tight but wooden planks nailed into preventing access...",    // Player must remove planks first and THEN unlock the lock to get the note for the keypad
+    east_description: "\nYou see a writing desk against the east wall with a note written on top of it and a drawer slightly open",                                           // We want the player to open this box at any time to get the crowbar
+    west_description: "\nThere's a closed, cardboard box with a tear on the top",
+}
+
+//console.log('This is a nice looking office, but... I am locked!')
+let room2 = {
+    inv: [
+        'shelf',
+        'table',
+        'chair',
+        'note',
+        'doorTwo'
+    ],
+    north_description: "There is a wooden door that takes you to the next room but it's locked. You need to find a key.",
+    south_description: "There is a lonely chair against the south wall",
+    east_description: "You see a fancy table on the east wall with a note written on top of it",
+    west_description: "There's a wooden bookshelf and a bunch of books on it.",
+}
+
+//console.log('Now you find yourself in a barn... this should be fun!')
+let room3 = {
+    inv: [
+        'hay',
+        'ladderThree',
+        'wagon',
+        'paper',
+        'doorThree'
+    ],
+    north_description: "There are double dutch doors. There is a keypad on the handle, but it is locked.",
+    south_description: "There is a old wagon that doesn't seem to be in use anymore. There is a piece of paper next to it.",
+    east_description: "You see a hayloft but no way to get there",
+    west_description: "There's a wooden ladder against the wall."
+}
+
+//console.log('This room looks like a creepy wharehouse... What kind of place is this?!!')
+let room4 = {
+    inv: [
+        'message',
+        'wooden_box',
+        'big_box',
+        'doorFour'
+    ],
+    north_description: "There is a huge metal door on the north wall that takes you to the next room. The door is locked",
+    south_description: "Somebody left a written message for you on the south wall",
+    east_description: "There is a big box against the east wall. The box is slightly open",
+    west_description: "You see a closed wooden box. It has nails and you have no way to open it...yet",
+}
+
+//console.log(You are now only a few steps away from escaping! You just need to find the way to escape this ... circus?) 
+
 
 let room5 = {
     inv: [
