@@ -265,20 +265,28 @@ async function play(){
                     console.log(room1.north_description)
                     answer = await ask("Enter action (to move say 'move') ")     // What is the player going to do in room 1 while facing this direction?
                     switch(answer){
-                        case 'i' || 'check inventory' || 'inventory' || 'inv' || 'check inv':
+                        case 'i': 
+                        case 'check inventory': 
+                        case 'inventory':
+                        case 'inv': 
+                        case 'check inv':
                             player.check_inventory()
                             play()
                             break
 
+                        case 'use pad':
                         case 'use keypad':
                             await room1_keypad.use_keypad()         // I put await here because I want to 'slow down and don't print anything else until this function returns'                  
                             play()
                             break
-
-                        case 'use door' || 'open door' || 'walk through door':
+                        
+                        case 'use door':
+                        case 'open door': 
+                        case 'walk through door':
                             if(player.isTrapped === false){
                                 console.log("The room has been unlocked and you can proceed to leave!")
                                 player.current_room = 'room2'
+                                player.isTrapped = true
                             }
                             player.isTrapped = true                     
                             play()
@@ -289,7 +297,8 @@ async function play(){
                             process.exit()
                             break
                         
-                        case ('examine keypad' || 'examine pad'):                
+                        case 'examine keypad':
+                        case 'examine pad':                
                             examine(room1_keypad)
                             play()
                             break
@@ -314,27 +323,38 @@ async function play(){
                     console.log(room1.south_description)
                     answer = await ask("Enter action ")
                     switch(answer){     
-                        case 'i' || 'check inventory' || 'inventory' || 'inv' || 'check inv':
+                        case 'i': 
+                        case 'check inventory': 
+                        case 'inventory':
+                        case 'inv': 
+                        case 'check inv':
                             player.check_inventory()
                             play()
                             break
-
-                        case 'examine box' || 'examine chest' || 'examine treasure chest':
+                        
+                        case 'examine box': 
+                        case 'examine chest': 
+                        case 'examine treasure chest':
                             console.log(boarded_box.desc)
                             play()
                             break
 
-                        case 'use crowbar' || 'use crowbar on box' || 'use crowbar on chest' && player.inv.includes('crowbar'):
+                        case 'use crowbar': 
+                        case 'use crowbar on box': 
+                        case 'use crowbar on chest': 
                             await room1_boarded_box.use_crowbar()
                             play()
                             break
 
-                        case 'use key' || 'use key on box' || 'use key on chest':
+                        case 'use key':  
+                        case 'use key on box':
+                        case 'use key on chest':
                             await room1_boarded_box.unlock()
                             play()
                             break    
                         
-                        case 'open box' || 'open chest':
+                        case 'open box':
+                        case 'open chest':
                             await room1_boarded_box.open()
                             play()
                             break 
@@ -359,7 +379,11 @@ async function play(){
                     console.log(room1.east_description)      // Room with the drawer
                     answer = await ask("Enter action ")
                     switch(answer){
-                        case 'i' || 'check inventory' || 'inventory' || 'inv' || 'check inv':
+                        case 'i': 
+                        case 'check inventory': 
+                        case 'inventory':
+                        case 'inv': 
+                        case 'check inv':
                             player.check_inventory()
                             play()
                             break
@@ -399,7 +423,11 @@ async function play(){
                         console.log(room1.west_description)
                         answer = await ask("Enter action ")
                         switch(answer){
-                            case 'i' || 'check inventory' || 'inventory' || 'inv' || 'check inv':
+                            case 'i': 
+                            case 'check inventory': 
+                            case 'inventory':
+                            case 'inv': 
+                            case 'check inv':
                             player.check_inventory()
                             play()
                             break
