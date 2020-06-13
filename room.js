@@ -432,17 +432,20 @@ async function play(){
                             play()
                             break
 
-                            case ('examine box' || 'examine cardboard box'):
+                            case 'examine box':
+                            case 'examine cardboard box':
                                 examine(room1_cardboard_box)
                                 play()
                                 break
                             
-                            case ('open box' || 'open cardboard box'):                         
+                            case 'open box': 
+                            case 'open cardboard box':                         
                                 room1_cardboard_box.open()
                                 play()
                                 break    
                             
-                            case ('take box' || 'take cardboard box'):
+                            case 'take box': 
+                            case 'take cardboard box':
                                 room1_cardboard_box.take()
                                 break
 
