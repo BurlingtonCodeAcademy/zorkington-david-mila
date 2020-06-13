@@ -37,6 +37,15 @@ let player = {
             console.log('Wrong code! Try again!')
             return false;
         }
+    },
+    unlock(codeRoomFive) {
+        if (code === '145454') {
+            console.log('Congrats! You have escaped!!!')
+            return true;
+        } else {
+            console.log('Wrong code! Try again!')
+            return false;
+        }
     }
 }
 
@@ -333,19 +342,116 @@ let room4 = {
     west_description: "You see a closed wooden box. It has nails and you have no way to open it...yet",
 }
 
-// let room5 = {
-//     inv: [
-//         'hay',
-//         'ladderThree',
-//         'wagon',
-//         'paper',
-//         'doorThree'
-//     ],
-//     north_description: "There are double dutch doors. There is a keypad on the handle, but it is locked.",
-//     south_description: "There is a old wagon that doesn't seem to be in use anymore. There is a piece of paper next to it.",   
-//     east_description: "You see a hayloft but no way to get there",                                      
-//     west_description: "There's a wooden ladder against the wall."
-// }
+//console.log(You are now only a few steps away from escaping! You just need to find the way to escape this ... circus?) 
+let boxMessage = {
+    name: "Message on Orange Box",
+    desc: "The message on the orange box can help you escape",
+    current_room: 'room5',
+    current_facing: 'south',
+    readMessage() {
+        return console.log("Only Douglas can help you escape this room! If your are nice to him, he might tell you his secret. P.S: He loves carrots. You might find what you need in this box...")
+    }
+}
+
+let OrangeBox = {
+    name: "Orange Box",
+    desc: "What will yo find inside the box?",
+    current_room: 'room5',
+    current_facing: 'south',
+    inv: ["carrots"],
+    openOrangeBox() {
+        return console.log("Douglas would love some carrots!")
+    },
+    takeCarrots() {
+        let carrots = this.inv.pop()
+        player.inv.push(carrots)
+        return console.log("Nice job! Douglas might tell you his secret in exchange for some carrots!")
+    }
+}
+
+let douglas = {
+    name: "Douglas the Elephant",
+    desc: "What a nice and gentle guy he is... he might even share a secret with you!",
+    current_room: 'room5',
+    current_facing: 'south',
+    feedDouglas() {
+        if (player.inv.includes('carrots')) {
+            return console.log("Thank you my dear friend! carrots are my favorite thing in the world! Now... if you want to escape this strange room, you need to take the red paper hanging from Arthur's neck. He is not always in a very good mood and if I were you, I would try to give him a treat too! By the way... he loves butter!")
+        } else {
+            return console.log("Douglas would like some treats indeed, but you need to find them first!")
+        }
+    }
+}
+
+let butter = {
+    name: "Bucket of Butter",
+    desc: "A bucket full of butter on the west side of the room",
+    current_room: 'room5',
+    current_facing: 'west',
+    takeButter() {
+        if (player.inv.includes('carrots')) {
+            return console.log("Let's hope that you can distract Arthur with his fvorite trick and take the red paper hanging from his neck")
+        } else {
+            return console.log("Why are you taking the butter? You don't know what to do with it")
+        }
+    }
+}
+
+let arthur = {
+    name: "Arthur The Lion",
+    desc: "Arthur is usually grumpy and not very frindly",
+    current_room: 'room5',
+    current_facing: 'east',
+    inv: [red_paper],
+    feedArthur() {
+        if (player.inv.includes('butter')) {
+            let redPaper = this.inv.pop()
+            player.inv.push(redPaper)
+            return console.log("Thank you my friend! I forget about the world when I eat butter")
+        } else {
+            return console.log("You better stay away from me... I am hungry and in a terrible mood!")
+        }
+    },
+    takeRedPaper() {
+        if (player.inv.includes('butter')) {
+
+            return console.log("You are closer than ever... The red paper says: 454545")
+        } else {
+            return console.log("You better stay away from me... I am hungry and in a terrible mood!")
+        }
+    }
+}
+
+let doorFive = {
+    name: "Rusty Door",
+    desc: "These doors take you to the outside world! There is a keypad on the handle, but it is locked",
+    current_room: 'room5',
+    current_facing: 'north',
+    unlockDoorFive() {
+        if (player.inv.includes('redPaper')) {
+            let codeRoomFive = await ask("Please enter the code...")
+            let win = player.unlock(codeRoomFive)
+            return win // check this return function!!!
+        } else {
+            return console.log("You don't know how to unlock this door")
+        }
+    }
+}
+
+let room5 = {
+    inv: [
+        'Douglas',
+        'Arthur',
+        'butter',
+        'orange_box',
+        'boxMessage',
+        'doorFive'
+    ],
+    north_description: "There is a rusty door on the north side of the tent. There is a keypad on the handle, but it is locked.",
+    south_description: "There is an elephant on the south side of the tent, his name is Douglas. Not too far from him, you'll see an orange box with a written message on it... The box is slightly open.",
+    east_description: "There is a lion on the east side of the tent, his name is Arthur. Wait a minute... is that a red piece of paper hanging from his neck",
+    west_description: "There's a bucket full of butter on the west side of the tent."
+}
 
 async function move(playerCurrentDirection) {
     let playerPossibleDirections = allPossibleDirections.filter(direction => direction !== playerCurrentDirection) // Make array of locations player can go other than current location                                                        
