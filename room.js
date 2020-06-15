@@ -47,18 +47,24 @@ let player = {
     },
 
     damage(damage_num){
-        this.health -= damage_num
+        if((this.health - damage_num)<= 0){
+            this.health -= damage_num
+            this.game_over()
+        } else {
+            this.health -= damage_num
+        }
+        
     },
     status_effect(){
         switch(this.status){
             case 'hungry':
                 this.damage(5)
-                console.log(`Your stomach growls in hunger, you need food fast! You have taken 5 damage and have ${player.health} left!`)
+                console.log('\n \x1b[33m%s\x1b[0m', `Your stomach growls in hunger, you need food fast! You have taken 5 damage and have ${player.health} health left!`)
                 break
 
             case 'fine' && this.health < 100:
                 this.health += 5
-                console.log(`Due to feeling fine, you are slowly healing! You've gained 5 health and are now at ${this.health}`)
+                console.log('\n \x1b[33m%s\x1b[0m', `Due to feeling fine, you are slowly healing! You've gained 5 health and are now at ${this.health} health!`)
                 break
 
             case 'fine' && this.health === 100:
@@ -72,7 +78,7 @@ let player = {
     
     game_over(){
         if(this.health <= 0){
-            console.log("\n Health has reached 0. Game over!")
+            console.log('\n \x1b[33m%s\x1b[0m', "Health has reached 0. Game over!")
             process.exit()
         }
     }
@@ -328,6 +334,42 @@ let room1 = {
       west_description: "\nThere's a closed, cardboard box with a tear on the top",
 }
 
+let room2 = {
+    inventory: [
+        'pizza'
+    ],
+
+    north_description: "\n A sign is attatched to the front of the building: \"Caeser's Pizza Shop\". It appears the door to the building is locked, but there's plenty of customers inside. What gives!? ",
+    south_description: "\n There's a lingering key with a pizza keyring attatched to it on a nearby trashcan. Surely the owner wouldn't mind if you borrowed it?",   
+    east_description: "\n There's a busy street over here! Looks dangerous...",                                           
+    west_description: "\n Plenty of shops detailing other items you can buy later when this feature gets added!",
+
+    describe(direction){
+        switch(direction){
+            case 'north':
+                return this.north_description
+                break
+            
+            case 'south':
+                return this.south_description
+                break
+
+            case 'east':
+                return this.east_description
+                break
+
+            case 'west':
+                return this.west_description
+                break
+
+            default:
+                console.log("Error... Please enter a cardinal direction (north, south, east, west) as the argument")
+                break
+        }
+    }
+
+}
+
 async function move(playerCurrentDirection){
     let playerPossibleDirections = allPossibleDirections.filter(direction => direction !== playerCurrentDirection) // Make array of locations player can go other than current location                                                        
     console.log(playerPossibleDirections)
@@ -456,7 +498,7 @@ async function play(){
                             console.log("Sorry, I don't know how to gargle!")
                             break        
                         
-                            case 'examine box': 
+                        case 'examine box': 
                         case 'examine chest': 
                         case 'examine treasure chest':
                             console.log(boarded_box.desc)
@@ -605,10 +647,35 @@ async function play(){
         
         case 'room2':                                                  // Starting logic for room 2
             player.status_effect()
+            console.log(room2.describe(player.current_facing)) // Got sidetracked working on developing classes, other functions, and other features before the room 2... Will add onto this on Monday.
             switch(player.current_facing){
-                case 'north':
-                    console.log("Try this")
+                case 'north':      
+                    answer = await ask("Enter action ")
+                    switch(answer){
+                        case 'move':
+                        move(player.current_facing)
+                        break
+                    }
                     play()
+                    break
+                
+                
+
+                case 'south':
+                    console.log("Welcome to the south")
+                    answer = await ask("Enter action ")
+                    switch(answer){
+                        case 'move':
+                        move(player.current_facing)
+                        break
+
+                        case 'loiter':
+                        console.log("No loitering!")
+                        player.damage(50)
+                        break
+                    }
+                    play()
+                    
                     break
                 default:
                     break
