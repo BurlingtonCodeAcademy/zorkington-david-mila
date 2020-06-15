@@ -183,6 +183,10 @@ let doorTwo = {
 let hay = {
     name: "Hayloft",
     desc: "I am sorry but the hayloft is out of reach!",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room3',
     current_facing: 'east',
     inv: ["horseshoe"],
@@ -203,6 +207,10 @@ let hay = {
 let ladderThree = {
     name: "Wooden Ladder",
     desc: "Could this ladder help you somehow? You might have to look around to find out",
+    opened: false,
+    useable: true,
+    visible: true,
+    takeable: true,
     current_room: 'room3',
     current_facing: 'west',
     inv: ["ladder"],
@@ -216,6 +224,10 @@ let ladderThree = {
 let paper = {
     name: "Piece of Paper",
     desc: "Look inside the wagon to get your first clue!",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room3',
     current_facing: 'south'
 }
@@ -223,6 +235,10 @@ let paper = {
 let wagon = {
     name: "Old Wagon",
     desc: "A very old wagon on the south end of the room",
+    opened: true,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room3',
     current_facing: 'south',
     lookinside() {
@@ -233,6 +249,10 @@ let wagon = {
 let doorThree = {
     name: "Double Dutch Doors",
     desc: "These doors take you to the next room. There is a keypad on the handle, but it is locked",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room3',
     current_facing: 'north',
     unlockDoorThree() {
@@ -250,6 +270,10 @@ let doorThree = {
 let message = {
     name: "Written Message",
     desc: "The secret to escape this room is in the wooden box, but you need to find something to open it with",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room4',
     current_facing: 'south'
 }
@@ -257,6 +281,10 @@ let message = {
 let big_box = {
     name: "Big Box",
     desc: "The box is slightly open... What could this be?",
+    opened: true,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room4',
     current_facing: 'east',
     inv: ['hammer'],
@@ -273,6 +301,10 @@ let big_box = {
 let wooden_box = {
     name: "Wooden Box",
     desc: "The box is sealed. You need a tool to open it",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room4',
     current_facing: 'west',
     inv: ['keyFour'],
@@ -290,6 +322,10 @@ let wooden_box = {
 let doorFour = {
     name: "Metal Door",
     desc: "This door takes you to the next room, but you must find the key to unlock it first",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room4',
     current_facing: 'north',
     unlockDoor() {
@@ -304,6 +340,10 @@ let doorFour = {
 let boxMessage = {
     name: "Message on Orange Box",
     desc: "The message on the orange box can help you escape",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room5',
     current_facing: 'south',
     readMessage() {
@@ -313,7 +353,11 @@ let boxMessage = {
 
 let orangeBox = {
     name: "Orange Box",
-    desc: "What will yo find inside the box?",
+    desc: "What will you find inside the box?",
+    opened: true,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room5',
     current_facing: 'south',
     inv: ["carrots"],
@@ -330,6 +374,10 @@ let orangeBox = {
 let douglas = {
     name: "Douglas the Elephant",
     desc: "What a nice and gentle guy he is... he might even share a secret with you!",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room5',
     current_facing: 'south',
     feedDouglas() {
@@ -344,6 +392,10 @@ let douglas = {
 let butter = {
     name: "Bucket of Butter",
     desc: "A bucket full of butter on the west side of the room",
+    opened: false,
+    useable: true,
+    visible: true,
+    takeable: true,
     current_room: 'room5',
     current_facing: 'west',
     takeButter() {
@@ -358,6 +410,10 @@ let butter = {
 let arthur = {
     name: "Arthur The Lion",
     desc: "Arthur is usually grumpy and not very frindly",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room5',
     current_facing: 'east',
     inv: [red_paper],
@@ -383,6 +439,10 @@ let arthur = {
 let doorFive = {
     name: "Rusty Door",
     desc: "These doors take you to the outside world! There is a keypad on the handle, but it is locked",
+    opened: false,
+    useable: false,
+    visible: true,
+    takeable: false,
     current_room: 'room5',
     current_facing: 'north',
     unlockDoorFive() {
