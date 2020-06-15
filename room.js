@@ -28,9 +28,9 @@ function examine(object){
 let player = {
     inv: [],
     health: 100,
-    status: 'hungry',
+    status: 'fine',
     isTrapped: true,
-    current_room: 'room2',
+    current_room: 'room1',
     current_facing: 'north',
 
     check_inventory(){
