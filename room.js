@@ -32,6 +32,7 @@ let player = {
     isTrapped: true,
     current_room: 'room1',
     current_facing: 'north',
+    common_question: false, // Logic to check if question is a common question or not
 
     check_inventory(){
         if(player.inv.length !== 0){
@@ -40,6 +41,38 @@ let player = {
             console.log('\n \x1b[36m%s\x1b[0m', `\n You don't have anything!`)
         }
         
+    },
+
+    async common_actions(input){                  // Check if the input is a common action that can be found here and then execute code, otherwise break and rely on the specific code found in certain locations
+        switch(input){
+            case 'i': 
+            case 'check inventory': 
+            case 'inventory':
+            case 'inv': 
+            case 'check inv':
+                this.common_question = true
+                player.check_inventory()
+                play()
+                break
+            
+            case 'gargle':
+                this.common_question = true
+                console.log('\n \x1b[36m%s\x1b[0m', `\n Sorry, I don't know how to gargle!`)
+                // play()
+                break    
+
+            case 'move':
+                this.common_question = true
+                await move(player.current_facing)
+                break
+            
+            default:
+                this.common_question = false
+                break
+                
+            
+        }
+
     },
     escape(){
         console.log("You have escaped")
@@ -52,6 +85,7 @@ let player = {
             this.game_over()
         } else {
             this.health -= damage_num
+            console.log('\n \x1b[33m%s\x1b[0m', `You have taken ${damage_num} damage and are now at ${this.health} health!`)
         }
         
     },
@@ -90,7 +124,7 @@ let player = {
     
 // }
 /// CLASSES /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class box {
+class Box {  // Any chest, or box you loot
     constructor(name, locked, boarded, key, loot, desc){
         this.name
         this.locked = locked
@@ -136,7 +170,8 @@ class box {
 } 
 
 /// OBJECTS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let room1_drawer_test_object = new box('drawer', false, false, 'none', 'drawer key', 'A wooden drawer slightly open with a note written on top!')
+let room1_drawer_test_object = new Box('drawer', false, false, 'none', 'drawer key', 'A wooden drawer slightly open with a note written on top!')
+
 let room1_drawer = {
     opened: false,
     current_room: 'room1',
@@ -311,14 +346,14 @@ let hay = {
 // let objBox = []
 // player.inv.push(room1_cardboard_box, room1_box_key)
 
-//// FUCNTIONS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// FUCNTIONS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-function check_stuff(inventory){
-    inventory.forEach(element => console.log(element.desc))
-    console.log('checked')
-    process.exit()
-}
+// function check_stuff(inventory){                              // For when each item is an object with a description
+//     inventory.forEach(element => console.log(element.desc))
+//     console.log('checked')
+//     process.exit()
+// }
 
 
 let room1 = {
@@ -383,28 +418,24 @@ async function move(playerCurrentDirection){
             case 'north':
                 player.current_facing = 'north'  // Add logic to make sure each of these inputs are valid (you're not trying to go to the same locaation you're already at)
                 console.log("You have chosen north")
-                play()
                 break
             
             case 'south':
                 player.current_facing = 'south'
                 console.log("You have chosen south")
-                play()
                 break
     
             case 'west':
                 console.log("You have chosen west")
                 player.current_facing = 'west'
-                play()
                 break
     
             case 'east':
                 player.current_facing = 'east'
-                play()
                 break
     
             default: 
-                console.log("\nUnexpected input, please try again")
+                console.log("\nUnexpected input for moving, please try again")
                 move(playerCurrentDirection)
                 break
         }
@@ -413,27 +444,26 @@ async function move(playerCurrentDirection){
     
 }
 //// PLAY FUNCTION //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+console.log(room1.north_description)
 async function play(){
     switch(player.current_room){
         case 'room1':
             switch(player.current_facing){     // Where is the player facing in room 1?
                 case 'north':           
-                    console.log(room1.north_description)
+                    if(player.common_question === true){
+                        console.log(room1.north_description)
+                        player.common_question = false        
+                    }
+                    
                     answer = await ask("Enter action (to move say 'move') ")     // What is the player going to do in room 1 while facing this direction?
+                    await player.common_actions(answer)
+                    if(player.common_question === true){
+                        
+                        console.log("\n \n Clearing out...")
+                        play()
+                    }  
+                    
                     switch(answer){
-                        case 'i': 
-                        case 'check inventory': 
-                        case 'inventory':
-                        case 'inv': 
-                        case 'check inv':
-                            player.check_inventory()
-                            play()
-                            break
-                        
-                        case 'gargle':    // Requirement for the 'gargle' story.
-                            console.log("Sorry, I don't know how to gargle!")
-                            break    
-                        
                         case 'use pad':
                         case 'use keypad':                           // I put await here because I want to 'slow down and don't print anything else until this function returns'   
                             await room1_keypad.use_keypad()          // If the user enters the right code, player.isTrapped === false until the player chooses 'open door' and goes to the next room               
@@ -455,9 +485,7 @@ async function play(){
                             play()
                             break                    
                         
-                        case 'check stuff':
-                            check_stuff(player.inv)
-                            break
+                        
                         
                         case 'examine keypad':
                         case 'examine pad':                
@@ -469,35 +497,21 @@ async function play(){
                             player.current_room = 'room2'
                             play()
                             break    
-                        
-                        case 'move':
-                            move(player.current_facing)
-                            break
 
                         default:
-                            console.log("Unexpected answer!")
                             play()
                             break
 
                     } 
                     break // This break is for north, south, east, west parts of the rooms       
                 case 'south':
-                    console.log(room1.south_description)
+                    if(player.common_question === true){
+                        console.log(room1.south_description)
+                        player.common_question = false        
+                    }
                     answer = await ask("Enter action ")
-                    switch(answer){     
-                        case 'i': 
-                        case 'check inventory': 
-                        case 'inventory':
-                        case 'inv': 
-                        case 'check inv':
-                            player.check_inventory()
-                            play()
-                            break
-                        
-                        case 'gargle':
-                            console.log("Sorry, I don't know how to gargle!")
-                            break        
-                        
+                    await player.common_actions(answer)
+                    switch(answer){                            
                         case 'examine box': 
                         case 'examine chest': 
                         case 'examine treasure chest':
@@ -530,34 +544,20 @@ async function play(){
                             play()
                             break    
                         
-                        case 'move':
-                            move(player.current_facing)
-                            break
-
                         default:
-                            console.log("\nUnexpected answer!")
                             play()
                             break
                         }
                     break
                 
                 case 'east':
-                    console.log(room1.east_description)      // Room with the drawer
+                    if(player.common_question === true){
+                        console.log(room1.east_description) // Room with the drawer
+                        player.common_question = false        
+                    }    
                     answer = await ask("Enter action ")
+                    await player.common_actions(answer)
                     switch(answer){
-                        case 'i': 
-                        case 'check inventory': 
-                        case 'inventory':
-                        case 'inv': 
-                        case 'check inv':
-                            player.check_inventory()
-                            play()
-                            break
-
-                        case 'gargle':
-                            console.log("Sorry, I don't know how to gargle!")
-                            break   
-
                         case 'open drawer':
                         case 'grab drawer':
                             room1_drawer.open()
@@ -581,12 +581,7 @@ async function play(){
                             play()
                             break    
                         
-                        case 'move':
-                            move(player.current_facing)
-                            break
-
                         default:
-                            console.log("Unexpected answer!")
                             play()
                             break
                         }
@@ -594,27 +589,21 @@ async function play(){
                     break
                 
                     case 'west':
-                        console.log(room1.west_description)
+                        if(player.common_question === true){
+                            console.log(room1.west_description) // Room with the drawer
+                            player.common_question = false        
+                        }   
+                        
                         answer = await ask("Enter action ")
+                        await player.common_actions(answer)
                         switch(answer){
-                            case 'i': 
-                            case 'check inventory': 
-                            case 'inventory':
-                            case 'inv': 
-                            case 'check inv':
-                            player.check_inventory()
-                            play()
-                            break
-
                             case 'examine box':
                             case 'examine cardboard box':
                                 examine(room1_cardboard_box)
                                 play()
                                 break
                             
-                            case 'gargle':
-                                console.log("Sorry, I don't know how to gargle!")
-                                break    
+                            
 
                             case 'open box': 
                             case 'open cardboard box':                         
@@ -627,12 +616,9 @@ async function play(){
                                 room1_cardboard_box.take()
                                 break
 
-                            case 'move':
-                                move(player.current_facing)
-                                break
+                            
     
                             default:
-                                console.log("Unexpected answer!")
                                 play()
                                 break
                             }
@@ -650,13 +636,12 @@ async function play(){
             console.log(room2.describe(player.current_facing)) // Got sidetracked working on developing classes, other functions, and other features before the room 2... Will add onto this on Monday.
             switch(player.current_facing){
                 case 'north':      
+                    if(player.common_question === true){
+                        console.log(room1.west_description) // Room with the drawer
+                        player.common_question = false        
+                    }   
                     answer = await ask("Enter action ")
-                    switch(answer){
-                        case 'move':
-                        move(player.current_facing)
-                        break
-                    }
-                    play()
+                    await player.common_actions(answer)
                     break
                 
                 
@@ -664,17 +649,18 @@ async function play(){
                 case 'south':
                     console.log("Welcome to the south")
                     answer = await ask("Enter action ")
+                    // await player.common_actions(answer)
                     switch(answer){
-                        case 'move':
-                        move(player.current_facing)
-                        break
-
                         case 'loiter':
                         console.log("No loitering!")
                         player.damage(50)
+                        play()
                         break
+
+                        default:
+                            play()
+                            break
                     }
-                    play()
                     
                     break
                 default:
